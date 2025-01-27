@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import useSWR from "swr";
 
 interface Service {
   name: string;
@@ -11,23 +10,11 @@ interface Service {
   status: string;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+interface ServiceListProps {
+  services: Service[];
+}
 
-const ServiceList: React.FC = () => {
-  const { data, error, isLoading } = useSWR<{ success: boolean; contracts: Service[] }>("/api/forms/service", fetcher);
-
-  console.log('service:', data)
-
-  if (isLoading) {
-    return <p>Loading services...</p>;
-  }
-
-  if (error) {
-    return <p>Failed to load services. Please try again later.</p>;
-  }
-
-  const services = data?.contracts || [];
-
+const ServiceList: React.FC<ServiceListProps> = ({ services }) => {
   return (
     <div>
       <h2 className="text-xl font-bold mt-8">Identified Services</h2>
