@@ -1,14 +1,22 @@
-"use client"
 "use client";
 import React, { useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import AddProgramForm from "@/app/forms/addProgramForm/page";
 import ProgramList from "@/components/workflows/ProgramList";
 
-const CapacityBuilding: React.FC = () => {
-  const [capacityPrograms, setCapacityPrograms] = useState<any[]>([]);
+interface Program {
+  id: number;
+  title: string;
+  facilitator: string;
+  date: string;
+  location: string;
+  participants: string[];
+}
 
-  const handleAddProgram = (program: any) => {
+const CapacityBuilding: React.FC = () => {
+  // Typing capacityPrograms as Program[] instead of any[]
+  const [capacityPrograms, setCapacityPrograms] = useState<Program[]>([]);
+
+  const handleAddProgram = (program: Program) => {
     setCapacityPrograms([...capacityPrograms, program]);
   };
 

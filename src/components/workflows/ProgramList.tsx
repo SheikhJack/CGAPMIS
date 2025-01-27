@@ -11,6 +11,11 @@ interface Program {
   participants?: string[];
 }
 
+interface ProgramListProps {
+  programs: Program[]; // Accepting Program[] as props
+  onAddParticipant: (programIndex: number, participant: string) => void;
+}
+
 const fetcher = (url: string) =>
   fetch(url)
     .then((res) => {
@@ -21,21 +26,14 @@ const fetcher = (url: string) =>
     })
     .then((data) => data.programs); // Extract `programs` directly for simplicity
 
-const ProgramList: React.FC = () => {
-  const { data: programs, error, isLoading } = useSWR<Program[]>("/api/forms/addProgram", fetcher);
-
-  // Debug logs
-  console.log("Programs:", programs);
-
-  if (error) return <p className="text-red-500">Failed to load programs.</p>;
-  if (isLoading) return <p>Loading programs...</p>;
+const ProgramList: React.FC<ProgramListProps> = ({ programs, onAddParticipant }) => {
   if (!programs || programs.length === 0) return <p>No programs added yet.</p>;
 
   return (
     <div>
       <h2 className="text-xl font-bold mt-8">Programs</h2>
       <div className="mt-4">
-        {programs.map((program) => (
+        {programs.map((program, index) => (
           <div key={program.id} className="border rounded p-4 mb-4">
             <h3 className="text-lg font-bold">{program.title}</h3>
             <p>Facilitator: {program.facilitator}</p>
@@ -44,11 +42,17 @@ const ProgramList: React.FC = () => {
             <h4 className="font-semibold mt-2">Participants:</h4>
             <ul className="list-disc ml-6">
               {program.participants?.length ? (
-                program.participants.map((participant, index) => <li key={index}>{participant}</li>)
+                program.participants.map((participant, idx) => <li key={idx}>{participant}</li>)
               ) : (
                 <p>No participants yet.</p>
               )}
             </ul>
+            <button
+              onClick={() => onAddParticipant(index, "New Participant")}
+              className="mt-2 bg-blue-500 text-white p-2 rounded"
+            >
+              Add Participant
+            </button>
           </div>
         ))}
       </div>
