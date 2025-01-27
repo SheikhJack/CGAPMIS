@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Response) {
+export async function GET(req: Request) {
   const connection = await pool.getConnection();
   
   try {
