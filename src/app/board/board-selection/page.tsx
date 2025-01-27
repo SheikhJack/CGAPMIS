@@ -16,7 +16,7 @@ const fetchCandidates = async () => {
 export default function BoardSelection() {
   const { data: candidates, error, mutate } = useSWR("/api/forms/candidacy", fetchCandidates);
 
-  const [votedCandidateIds, setVotedCandidateIds] = useState<number[]>([]); 
+  const [votedCandidateIds, setVotedCandidateIds] = useState<number[]>([]);
   const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function BoardSelection() {
           throw new Error("Failed to fetch votes");
         }
         const data = await response.json();
-        setVotedCandidateIds(data.map((vote) => vote.candidateId)); 
+        setVotedCandidateIds(data.map((vote: { candidateId: any; }) => vote.candidateId));
       } catch (error) {
         console.error("Error fetching votes:", error);
       }
@@ -68,7 +68,7 @@ export default function BoardSelection() {
         throw new Error(`Failed to remove candidate: ${response.statusText}`);
       }
 
-      mutate(candidates.filter((candidate) => candidate.id !== id), false);
+      mutate(candidates.filter((candidate: { id: number; }) => candidate.id !== id), false);
       setFeedback("Candidate removed successfully!");
     } catch (error: any) {
       setFeedback(`Error: ${error.message}`);
@@ -87,7 +87,7 @@ export default function BoardSelection() {
         {/* Candidate List */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Nominees</h2>
-          {candidates.map((candidate) => (
+          {candidates.map((candidate: { id: React.Key | null | undefined; name: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; education: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; experience: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; contact: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; }) => (
             <div
               key={candidate.id}
               className="flex items-center justify-between border p-4 rounded"
@@ -99,23 +99,24 @@ export default function BoardSelection() {
                 <p>{candidate.contact}</p>
               </div>
               <div className="flex items-center gap-4">
-                {votedCandidateIds.includes(candidate.id) ? (
+                {votedCandidateIds.includes(candidate.id as number) ? (
                   <span className="text-green-500 font-medium">Voted</span>
                 ) : (
                   <button
-                    onClick={() => handleVote(candidate.id)}
+                    onClick={() => candidate.id != null && handleVote(candidate.id as  number)}
                     className="bg-blue-500 text-white px-4 py-2 rounded"
                   >
                     Vote
                   </button>
                 )}
                 <button
-                  onClick={() => handleRemove(candidate.id)}
+                  onClick={() => candidate.id != null && handleRemove(candidate.id as number)}
                   className="text-red-500 ml-4"
                 >
                   Remove
                 </button>
               </div>
+
             </div>
           ))}
         </div>
