@@ -52,9 +52,10 @@ export default function CreateBoard() {
       setBoardName("");
       setDescription("");
       setMembers([{ name: "", role: "" }]);
-    } catch (error) {
+    } catch (error: unknown) {
       // Error message
-      toast.error(`Error: ${error.message}`);
+      const e = error as Error;
+      toast.error(`Error: ${e.message}`);
     } finally {
       setLoading(false); // Stop loading
     }
