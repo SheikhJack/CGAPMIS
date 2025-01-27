@@ -2,6 +2,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+
+const restrictedPaths = {
+    admin: ['path1', 'path2'],
+    board: ['path3', 'path4'],
+    user: ['path5', 'path6'],
+  };
+
 export function middleware(req: NextRequest) {
   const role = req.cookies.get("role")?.value;
 
@@ -22,7 +29,7 @@ export function middleware(req: NextRequest) {
   const currentPath = req.nextUrl.pathname;
 
   const isRestricted = Object.keys(restrictedPaths).every((key) =>
-    restrictedPaths[key].includes(currentPath)
+    restrictedPaths[role as keyof typeof restrictedPaths].includes(currentPath)
   );
 
   if (isRestricted && role !== req.nextUrl.pathname.split("/")[1]) {
