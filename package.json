@@ -10,18 +10,23 @@
   },
   "dependencies": {
     "apexcharts": "^4.0.0",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "flatpickr": "^4.6.13",
+    "formdata-node": "^6.0.3",
     "jsvectormap": "^1.6.0",
     "mysql2": "^3.12.0",
     "next": "^14.2.4",
+    "nodemailer": "^6.10.0",
     "react": "^18",
     "react-apexcharts": "^1.7.0",
     "react-dom": "^18",
-    "react-toastify": "^11.0.3"
+    "react-toastify": "^11.0.3",
+    "swr": "^2.3.0"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",

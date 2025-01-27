@@ -1,12 +1,12 @@
-import { createConnection } from "../../../../../lib/db";
+import  pool  from "../../../../../lib/db";
 import { NextResponse } from "next/server";
 
-export async function POST(req: { json: () => any; }) {
+export async function POST(req: Request ) {
   const body = await req.json();
   const { title, facilitator, date, location } = body;
 
   try {
-    const pool = await createConnection();
+    const connection = await pool.getConnection();
     const query = `
       INSERT INTO programs (title, facilitator, date, location)
       VALUES (?, ?, ?, ?)
@@ -24,10 +24,9 @@ export async function POST(req: { json: () => any; }) {
 
 export async function GET() {
   try {
-    const pool = await createConnection();
+    const connection = await pool.getConnection();
     const query = "SELECT * FROM programs";
-    const [rows] = await pool.execute(query);
-
+    const [rows] = await connection.execute(query);  // Use connection.execute, not pool.execute
 
     return NextResponse.json({ success: true, programs: rows });
   } catch (error) {
@@ -35,3 +34,4 @@ export async function GET() {
     return NextResponse.json({ success: false, error: "Failed to fetch programs" });
   }
 }
+

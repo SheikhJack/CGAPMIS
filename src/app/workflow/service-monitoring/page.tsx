@@ -1,91 +1,104 @@
-"use client"
+"use client";
+
 import React, { useState } from "react";
+import useSWR from "swr";
+import ComplaintList from "@/components/workflows/ComplaintList";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
-const ServiceMonitoring: React.FC = () => {
-  const [complaints, setComplaints] = useState<any[]>([]);
-  const [newComplaint, setNewComplaint] = useState("");
+interface Complaint {
+  id: number;
+  description: string;
+  status: string;
+  officer: string | null;
+}
 
-  const handleAddComplaint = (e: React.FormEvent) => {
-    e.preventDefault();
-    const complaint = {
-      id: complaints.length + 1,
-      description: newComplaint,
-      status: "Pending",
-      officer: null,
-    };
-    setComplaints([...complaints, complaint]);
-    setNewComplaint("");
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+const ComplaintsPage: React.FC = () => {
+  const { data: complaints, error, mutate } = useSWR<Complaint[]>(
+    "/api/forms/complaints",
+    fetcher
+  );
+  const [loading, setLoading] = useState(false);
+
+  // Assign Officer to a Complaint
+  const assignOfficer = async (id: number) => {
+    const officerName = prompt("Enter officer's name:");
+    if (!officerName) {
+      toast.error("Officer name is required!");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/forms/complaints/${id}/assign`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ officer: officerName }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to assign officer.");
+      }
+
+      toast.success("Officer assigned successfully!");
+      mutate(); // Refresh complaints
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to assign officer.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const assignOfficer = (id: number) => {
-    const updatedComplaints = complaints.map((complaint) =>
-      complaint.id === id ? { ...complaint, officer: "John Doe", status: "In Progress" } : complaint
-    );
-    setComplaints(updatedComplaints);
+  // Resolve a Complaint
+  const resolveComplaint = async (id: number) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/forms/complaints/${id}/resolve`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to resolve complaint.");
+      }
+
+      toast.success("Complaint resolved successfully!");
+      mutate(); // Refresh complaints
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to resolve complaint.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const resolveComplaint = (id: number) => {
-    const updatedComplaints = complaints.map((complaint) =>
-      complaint.id === id ? { ...complaint, status: "Resolved" } : complaint
-    );
-    setComplaints(updatedComplaints);
-  };
+  if (error) return <p>Error loading complaints.</p>;
+  if (!complaints) return <p>Loading...</p>;
 
   return (
     <DefaultLayout>
       <div className="p-6 mb-100">
-        <h1 className="text-2xl font-bold mb-4">Log Complaint</h1>
-
-        {/* Complaint Logging */}
-        <form onSubmit={handleAddComplaint} className="space-y-4">
-          <textarea
-            className="border p-2 w-full rounded"
-            placeholder="Describe the complaint"
-            value={newComplaint}
-            onChange={(e) => setNewComplaint(e.target.value)}
-            required
-          ></textarea>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded">Log Complaint</button>
-        </form>
-
-        {/* Complaint List */}
-        <h2 className="text-xl font-bold mt-6">Logged Complaints</h2>
-        {complaints.length > 0 ? (
-          <ul className="mt-4">
-            {complaints.map((complaint) => (
-              <li key={complaint.id} className="border p-4 rounded mb-4">
-                <p><strong>ID:</strong> {complaint.id}</p>
-                <p><strong>Description:</strong> {complaint.description}</p>
-                <p><strong>Status:</strong> {complaint.status}</p>
-                <p><strong>Assigned Officer:</strong> {complaint.officer || "Not Assigned"}</p>
-                <div className="flex gap-2 mt-2">
-                  {!complaint.officer && (
-                    <button
-                      onClick={() => assignOfficer(complaint.id)}
-                      className="bg-yellow-500 text-white px-4 py-2 rounded"
-                    >
-                      Assign Officer
-                    </button>
-                  )}
-                  {complaint.status === "In Progress" && (
-                    <button
-                      onClick={() => resolveComplaint(complaint.id)}
-                      className="bg-green-500 text-white px-4 py-2 rounded"
-                    >
-                      Resolve Complaint
-                    </button>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No complaints logged yet.</p>
-        )}
+        <h1 className="text-2xl font-bold mb-6">Complaints Dashboard</h1>
+        <ComplaintList
+          complaints={complaints}
+          onAssignOfficer={assignOfficer}
+          onResolveComplaint={resolveComplaint}
+          loading={loading}
+        />
+        <ToastContainer />
       </div>
     </DefaultLayout>
   );
 };
 
-export default ServiceMonitoring;
+export default ComplaintsPage;

@@ -67,9 +67,10 @@ const menuGroups = [
           { label: "Contracts Management", route: "/workflow/contracts" },
           { label: "Outsourcing", route: "/workflow/outsourcing" },
           { label: "Service Identification", route: "/workflow/service" },
-          { label: "Tender Bidding", route: "/workflow/tender-bidding" },
           { label: "Service Monitoring", route: "/workflow/service-monitoring" },
           { label: "Tender Details", route: "/workflow/tender-details" },
+          { label: "Voting Results", route: "/workflow/results" },
+          { label: "Tender Evaluation", route: "/workflow/evaluation" },
         ],
       },
       {
@@ -130,16 +131,32 @@ const menuGroups = [
         label: "Forms",
         route: "#",
         children: [
-          { label: "Tender Bidding", route: "/forms/tender-bidding" },
+          { label: "Create Tender", route: "/forms/tender-bidding" },
           { label: "Complaints Form", route: "/forms/serviceMonitoring" },
-          { label: "Training Program", route: "/forms/addProgramForm" },
+          { label: "Training Program Form", route: "/forms/addProgramForm" },
           { label: "Contract Management Form", route: "/forms/contractManagement" },
           { label: "Outsourcing Project Form", route: "/forms/outsourcing" },
+          { label: "Service Identification Form", route: "/forms/service-identification" },
+          { label: "Board Candidacy Form", route: "/forms/candidate" },
+          { label: "Tender Evaluation Form", route: "/forms/evaluation" },
         ],
       },
       {
         icon: (
-          <svg id="Layer_1"
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 105.53 122.88" className="fill-current" width="28" height="18"><path d="M121.693 60.752h-3.586V17.435a6.758 6.758 0 0 0-6.75-6.75H17.6A13.059 13.059 0 0 0 4.557 23.729v80.545A13.055 13.055 0 0 0 17.6 117.315h93.76a6.758 6.758 0 0 0 6.75-6.75V89.837h3.586a1.749 1.749 0 0 0 1.75-1.75V62.5a1.749 1.749 0 0 0-1.753-1.748zM17.6 14.185h93.755a3.254 3.254 0 0 1 3.25 3.25v16.673a6.707 6.707 0 0 0-3.25-.835H17.6a9.544 9.544 0 1 1 0-19.088zm-9.543 90.089V32.591a12.993 12.993 0 0 0 9.543 4.182h9.642A60.029 60.029 0 0 1 40.8 75.294a60.025 60.025 0 0 1-13.559 38.521H17.6a9.551 9.551 0 0 1-9.543-9.541zm106.55 6.291a3.254 3.254 0 0 1-3.25 3.25H31.775A63.7 63.7 0 0 0 44.3 75.294a63.7 63.7 0 0 0-12.525-38.521h79.582a3.254 3.254 0 0 1 3.25 3.25v20.729h-24.53a14.543 14.543 0 1 0 0 29.085h24.53zm5.336-24.228H90.077a11.043 11.043 0 1 1 0-22.085h29.866z"/><path d="M90.077 68.733a6.561 6.561 0 1 0 6.561 6.561 6.569 6.569 0 0 0-6.561-6.561zm0 9.621a3.061 3.061 0 1 1 3.061-3.06 3.064 3.064 0 0 1-3.061 3.06z"/></svg>
+        ),
+              label: "Financials",
+        route: "#",
+        children: [
+          { label: "Create Budget", route: "/financials/createBudget" },
+          { label: "Board Selection", route: "/board/board-selection" },
+          { label: "Perfomance Monitoring", route: "/board/perfomance-monitoring" },
+          { label: "Evaluation", route: "/board/evaluation" },
+        ],
+      },
+      {
+        icon: (
+          <svg
             data-name="Layer 1"
             className="fill-current"
             width="18"

@@ -4,7 +4,7 @@ import React from "react";
 
 interface ContractListProps {
   contracts: any[];
-  onDeleteContract: (index: number) => void;
+  onDeleteContract: (id: number) => void;
 }
 
 const ContractList: React.FC<ContractListProps> = ({ contracts, onDeleteContract }) => {
@@ -25,18 +25,18 @@ const ContractList: React.FC<ContractListProps> = ({ contracts, onDeleteContract
             </tr>
           </thead>
           <tbody>
-            {contracts.map((contract, index) => (
-              <tr key={index}>
+            {contracts.map((contract) => (
+              <tr key={contract.id}>
                 <td className="p-3 border">{contract.title}</td>
                 <td className="p-3 border">{contract.vendor}</td>
-                <td className="p-3 border">{contract.startDate}</td>
-                <td className="p-3 border">{contract.endDate}</td>
+                <td className="p-3 border">{new Date(contract.start_date).toLocaleDateString()}</td>
+                <td className="p-3 border">{new Date(contract.end_date).toLocaleDateString()}</td>
                 <td className="p-3 border">{contract.value}</td>
                 <td className="p-3 border">{contract.status}</td>
                 <td className="p-3 border">
                   <button
                     className="bg-red-500 text-white px-3 py-1 rounded"
-                    onClick={() => onDeleteContract(index)}
+                    onClick={() => onDeleteContract(contract.id)}
                   >
                     Delete
                   </button>
@@ -46,7 +46,7 @@ const ContractList: React.FC<ContractListProps> = ({ contracts, onDeleteContract
           </tbody>
         </table>
       ) : (
-        <p className="mt-4">No contracts added yet.</p>
+        <p className="mt-4">No contracts available.</p>
       )}
     </div>
   );

@@ -1,38 +1,87 @@
 "use client";
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import useSWR from "swr";
+
+// Fetch candidates from the backend
+const fetchCandidates = async () => {
+  const response = await fetch("/api/forms/candidacy");
+  if (!response.ok) {
+    throw new Error("Failed to fetch candidates");
+  }
+  return response.json();
+};
 
 export default function BoardSelection() {
-  const [candidates, setCandidates] = useState([
-    { id: 1, name: "John Doe", qualifications: "MBA, 10+ years in Management", votes: 0 },
-    { id: 2, name: "Jane Smith", qualifications: "PhD in Economics, 8+ years in Policy Making", votes: 0 },
-    { id: 3, name: "Samuel Green", qualifications: "LLB, 15+ years in Legal Advisory", votes: 0 },
-  ]);
+  const { data: candidates, error, mutate } = useSWR("/api/forms/candidacy", fetchCandidates);
 
-  const [selectedCandidate, setSelectedCandidate] = useState<number | null>(null);
+  const [votedCandidateIds, setVotedCandidateIds] = useState<number[]>([]); 
   const [feedback, setFeedback] = useState("");
 
-  const handleVote = () => {
-    if (selectedCandidate === null) {
-      setFeedback("Please select a candidate to vote.");
-      return;
+  useEffect(() => {
+    // Check for existing votes (optional)
+    const fetchVotes = async () => {
+      try {
+        const response = await fetch("/api/votes"); // Adjust API endpoint for fetching votes
+        if (!response.ok) {
+          throw new Error("Failed to fetch votes");
+        }
+        const data = await response.json();
+        setVotedCandidateIds(data.map((vote) => vote.candidateId)); 
+      } catch (error) {
+        console.error("Error fetching votes:", error);
+      }
+    };
+    fetchVotes();
+  }, []);
+
+  const handleVote = async (candidateId: number) => {
+    try {
+      const response = await fetch("/api/vote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ candidateId }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to submit vote: ${response.statusText}`);
+      }
+
+      setVotedCandidateIds([...votedCandidateIds, candidateId]);
+      setFeedback(`You have successfully voted for candidate ${candidateId}`);
+      mutate(); // Update candidates list (optional)
+    } catch (error: any) {
+      setFeedback(`Error: ${error.message}`);
     }
-
-    const updatedCandidates = candidates.map((candidate) =>
-      candidate.id === selectedCandidate
-        ? { ...candidate, votes: candidate.votes + 1 }
-        : candidate
-    );
-
-    setCandidates(updatedCandidates);
-    setFeedback("Your vote has been successfully submitted!");
-    setSelectedCandidate(null);
   };
+
+  const handleRemove = async (id: number) => {
+    try {
+      const response = await fetch(`/api/forms/candidacy/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to remove candidate: ${response.statusText}`);
+      }
+
+      mutate(candidates.filter((candidate) => candidate.id !== id), false);
+      setFeedback("Candidate removed successfully!");
+    } catch (error: any) {
+      setFeedback(`Error: ${error.message}`);
+    }
+  };
+
+  // Error handling for failed fetching
+  if (error) return <div>Error: {error.message}</div>;
+  if (!candidates) return <div>Loading...</div>;
 
   return (
     <DefaultLayout>
-      <div className="p-6">
+      <div className="p-6 mb-40">
         <h1 className="text-2xl font-bold mb-4">Board Selection</h1>
 
         {/* Candidate List */}
@@ -45,62 +94,37 @@ export default function BoardSelection() {
             >
               <div>
                 <h3 className="text-lg font-bold">{candidate.name}</h3>
-                <p>{candidate.qualifications}</p>
+                <p>{candidate.education}</p>
+                <p>{candidate.experience}</p>
+                <p>{candidate.contact}</p>
               </div>
               <div className="flex items-center gap-4">
-                <input
-                  type="radio"
-                  id={`candidate-${candidate.id}`}
-                  name="candidate"
-                  value={candidate.id}
-                  checked={selectedCandidate === candidate.id}
-                  onChange={() => setSelectedCandidate(candidate.id)}
-                />
-                <label htmlFor={`candidate-${candidate.id}`} className="font-medium">
-                  Select
-                </label>
+                {votedCandidateIds.includes(candidate.id) ? (
+                  <span className="text-green-500 font-medium">Voted</span>
+                ) : (
+                  <button
+                    onClick={() => handleVote(candidate.id)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                  >
+                    Vote
+                  </button>
+                )}
+                <button
+                  onClick={() => handleRemove(candidate.id)}
+                  className="text-red-500 ml-4"
+                >
+                  Remove
+                </button>
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Vote Button */}
-        <div className="mt-6">
-          <button
-            onClick={handleVote}
-            className="bg-blue-500 text-white px-6 py-2 rounded"
-          >
-            Submit Vote
-          </button>
         </div>
 
         {/* Feedback */}
         {feedback && (
           <p className="mt-4 text-green-500 font-medium">{feedback}</p>
         )}
-
-        {/* Voting Results */}
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold">Voting Results</h2>
-          <table className="table-auto w-full mt-4 border">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="p-2">Candidate</th>
-                <th className="p-2">Votes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {candidates.map((candidate) => (
-                <tr key={candidate.id}>
-                  <td className="p-2">{candidate.name}</td>
-                  <td className="p-2">{candidate.votes}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
     </DefaultLayout>
   );
 }
-

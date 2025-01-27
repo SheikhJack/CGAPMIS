@@ -1,13 +1,15 @@
-"use client";
+'use client'
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 export default function CreateBoard() {
   const [boardName, setBoardName] = useState("");
   const [description, setDescription] = useState("");
   const [members, setMembers] = useState([{ name: "", role: "" }]);
-  const [submissionStatus, setSubmissionStatus] = useState("");
+  const [loading, setLoading] = useState(false); // State for button loading
 
   const handleMemberChange = (index: number, field: string, value: string) => {
     const updatedMembers = [...members];
@@ -19,8 +21,9 @@ export default function CreateBoard() {
     setMembers([...members, { name: "", role: "" }]);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true); // Start loading
 
     const newBoard = {
       name: boardName,
@@ -28,15 +31,33 @@ export default function CreateBoard() {
       members,
     };
 
-    console.log("Board Created:", newBoard);
+    try {
+      const response = await fetch("/api/board/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newBoard),
+      });
 
-    // Simulate form submission status
-    setSubmissionStatus("Board created successfully!");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create board");
+      }
 
-    // Clear form
-    setBoardName("");
-    setDescription("");
-    setMembers([{ name: "", role: "" }]);
+      // Success message
+      toast.success("Board created successfully!");
+
+      // Clear form after submission
+      setBoardName("");
+      setDescription("");
+      setMembers([{ name: "", role: "" }]);
+    } catch (error) {
+      // Error message
+      toast.error(`Error: ${error.message}`);
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
 
   return (
@@ -109,18 +130,13 @@ export default function CreateBoard() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            className={`bg-blue-500 text-white px-4 py-2 rounded ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={loading} // Disable the button when loading
           >
-            Create Board
+            {loading ? "Creating..." : "Create Board"}
           </button>
         </form>
-
-        {/* Submission Status */}
-        {submissionStatus && (
-          <p className="mt-4 text-green-500">{submissionStatus}</p>
-        )}
       </div>
     </DefaultLayout>
   );
 }
-

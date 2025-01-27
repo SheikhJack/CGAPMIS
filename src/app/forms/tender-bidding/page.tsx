@@ -12,24 +12,46 @@ const TenderForm: React.FC = () => {
     budget: "",
     criteria: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-    console.log("Submitted form data:", formData);
+    try {
+      const response = await fetch("/api/forms/createTender", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    // Redirect to tender listing after successful submission
-    router.push("/tender/listing");
+      if (!response.ok) {
+        const { error } = await response.json();
+        throw new Error(error || "Failed to submit tender.");
+      }
+
+      // Success
+      setToast({ message: "Tender created successfully!", type: "success" });
+
+    } catch (err: any) {
+      setToast({ message: err.message, type: "error" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <DefaultLayout>
-
       <div>
         <h1 className="text-2xl font-bold mb-4">Create a Tender</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -93,8 +115,26 @@ const TenderForm: React.FC = () => {
               required
             ></textarea>
           </div>
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+            disabled={loading}
+          >
+            {loading ? "Submitting..." : "Submit"}
+          </button>
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         </form>
+
+        {/* Toast Notification */}
+        {toast && (
+          <div
+            className={`fixed bottom-4 right-4 p-4 rounded shadow-lg ${
+              toast.type === "success" ? "bg-green-500" : "bg-red-500"
+            } text-white`}
+          >
+            {toast.message}
+          </div>
+        )}
       </div>
     </DefaultLayout>
   );
