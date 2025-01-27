@@ -17,10 +17,10 @@ const menuGroups = [
   {
     name: "MENU",
     menuItems: [
-      {
-        label: "Home",
-        route: "/auth/entry",  // Home route is now 'auth/entry'
-      },
+      // {
+      //   label: "Home",
+      //   route: "/auth/entry",  // Home route is now 'auth/entry'
+      // },
       {
         icon: (
           <svg
