@@ -1,20 +1,27 @@
-import React from 'react';
+"use client"
+import React, { useEffect } from 'react';
 import ECommerce from "@/components/Dashboard/E-commerce";
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import Loader from '@/components/common/Loader';
 
-export const metadata: Metadata = {
-  title:
-    "Next.js E-commerce Dashboard | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js Home for TailAdmin Dashboard Template",
-};
+
 
 export default function Home() {
+
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/auth/entry'; // Redirect to '/auth/entry'
+    }
+  }, []);
+
+
   return (
-    <>
-      <DefaultLayout>
-        <ECommerce />
-      </DefaultLayout>
-    </>
+    <div>
+      {/* You can optionally add content here or leave it empty */}
+      <Loader/>
+    </div>
+
   );
 }

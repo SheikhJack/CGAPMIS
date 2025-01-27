@@ -4,14 +4,47 @@ import Image from "next/image";
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 
 
 const Profile = () => {
+  const { id } = useParams()
 
-  const router = useRouter();
-  // const { id } = router.query;
+  const { data, error } = useSWR(`/api/updateProfile/${id}`, fetcher); 
+
+  if (error) {
+    return (
+      <DefaultLayout>
+        <div className="mx-auto max-w-242.5">
+          <Breadcrumb pageName="Profile" />
+          <div className="text-center py-8 text-xl text-red-600">
+            Error loading profile.
+          </div>
+        </div>
+      </DefaultLayout>
+    );
+  }
+
+  if (!data) {
+    return (
+      <DefaultLayout>
+        <div className="mx-auto max-w-242.5">
+          <Breadcrumb pageName="Profile" />
+          <div className="text-center py-8 text-xl text-gray-600">
+            Loading profile...
+          </div>
+        </div>
+      </DefaultLayout>
+    );
+  }
+  const profile = data.profile;
+
+  console.log(data)
+
 
 
   return (
@@ -22,7 +55,7 @@ const Profile = () => {
         <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="relative z-20 h-35 md:h-65">
             <Image
-              src={"/images/cover/cover-01.png"}
+              src={profile.coverImage || "/images/placeholder-cover.png"}
               alt="profile cover"
               className="h-full w-full rounded-tl-sm rounded-tr-sm object-cover object-center"
               width={970}
@@ -74,7 +107,7 @@ const Profile = () => {
             <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
               <div className="relative drop-shadow-2">
                 <Image
-                  src={"/images/user/user-06.png"}
+                 src={profile.profileImage || "/images/placeholder-profile.png"}
                   width={160}
                   height={160}
                   style={{
@@ -119,29 +152,27 @@ const Profile = () => {
             </div>
             <div className="mt-4">
               <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-                Danish Heilium
+                {profile.name}
               </h3>
-              <p className="font-medium">Ui/Ux Designer</p>
-              <p className="font-medium text-gray-600 dark:text-gray-400">Age: 30</p>
-              <p className="font-medium text-gray-600 dark:text-gray-400">Contact: +123 456 7890</p>
-              <p className="font-medium text-gray-600 dark:text-gray-400">Email: danish@example.com</p>
+              <p className="font-medium">{profile.position}</p>
+              <p className="font-medium text-gray-600 dark:text-gray-400">Age: {profile.age}</p>
+              <p className="font-medium text-gray-600 dark:text-gray-400">Contact: {profile.contactNumber}</p>
+              <p className="font-medium text-gray-600 dark:text-gray-400">Email:  {profile.email}</p>
 
               <div className="mx-auto max-w-180 mt-4">
                 <h4 className="font-semibold text-black dark:text-white">
                   About Me
                 </h4>
                 <p className="mt-4.5">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Pellentesque posuere fermentum urna, eu condimentum mauris
-                  tempus ut. Donec fermentum blandit aliquet. Etiam dictum
-                  dapibus ultricies. Sed vel aliquet libero. Nunc a augue
-                  fermentum, pharetra ligula sed, aliquam lacus.
+                {profile.about}
                 </p>
               </div>
             </div>
           </div>
         </div>
-        <Link href={`/`}>
+        <Link
+          className=" mt-10 cursor-pointer items-center justify-center gap-2 rounded bg-primary px-2 py-1 text-sm font-medium text-white hover:bg-opacity-80 xsm:px-4"
+          href={`/profile/${id}`}>
           <button>Edit</button>
         </Link>
       </div>
