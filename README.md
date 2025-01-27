@@ -11,8 +11,22 @@ Protected Routes: Certain routes in the app are protected, requiring authenticat
 How It Works
 Initial Access (/auth/entry)
 When a user first accesses the application, they are directed to /auth/entry.
-This is the authentication page where users enter their credentials.
+This is the authentication page where users enter their credential
+
 Authentication Process
+The application follows a simple authentication flow for users, admins, and board members. Here's a breakdown of the process:
+
+1. User Authentication
+Account Creation: To get started, users create an account by providing their basic details (such as name, email, and password) via the registration page.
+Login: After registration, users can log in by entering their credentials (email and password) on the login page.
+Upon successful login, users are redirected to the dashboard or their designated homepage.
+2. Admin and Board Member Authentication
+Special Authentication Code: Admins and board members go through an additional authentication step to verify their access. After creating an account and logging in like regular users, they are required to enter a unique authentication code (1234567890) to complete the authentication process.
+Why the Code?: This extra layer of security ensures that only authorized individuals can gain access to admin and board member sections. The code serves as an additional verification mechanism, making sure that these roles are explicitly granted access. This process prevents unauthorized users from mistakenly or maliciously assuming admin or board member roles.
+3. Redirection After Authentication
+After successful authentication (whether via login or entering the special code), users, admins, and board members are redirected to their respective dashboards or main pages.
+By requiring the code for admins and board members, the app ensures that access to sensitive sections of the platform is properly secured and only granted to individuals with the appropriate permissions.
+
 Users will be asked to provide their credentials (e.g., email and password) in the form on the /auth/entry page.
 Upon submitting the form, the app verifies the credentials (via API or other methods) and checks whether they are correct.
 Successful Authentication
