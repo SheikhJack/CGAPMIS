@@ -16,7 +16,7 @@ export default function PerformanceMonitoring() {
 
   const chartOptions = {
     chart: {
-      type: "bar",
+      type: "bar" as "bar",
     },
     xaxis: {
       categories: metrics.map((metric) => metric.parameter),
