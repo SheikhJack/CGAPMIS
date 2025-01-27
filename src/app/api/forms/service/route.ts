@@ -1,3 +1,4 @@
+import { ResultSetHeader } from "mysql2";
 import pool from "../../../../../lib/db";
 import { NextResponse } from "next/server";
 
@@ -25,7 +26,7 @@ interface Service {
       }
   
       // Insert data into the database
-      const [result] = await pool.query(
+      const [result]: [ResultSetHeader, any] = await pool.query<ResultSetHeader>(
         "INSERT INTO services (name, department, annual_cost, outsourcing_cost, reasons, impact, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [name, department, annualCost, outsourcingCost, reasons, impact, status || "Draft"]
       );

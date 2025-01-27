@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '../../../../lib/db'
+import { ResultSetHeader } from 'mysql2';
 
 
 export async function POST(req: Response) {
@@ -11,7 +12,7 @@ export async function POST(req: Response) {
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
     }
 
-    const [result] = await pool.execute(
+    const [result]: [ResultSetHeader, any] = await pool.execute<ResultSetHeader>(
       'INSERT INTO users_board (name, email, password) VALUES (?, ?, ?)',
       [name, email, password]
     );

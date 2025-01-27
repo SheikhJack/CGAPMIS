@@ -1,3 +1,4 @@
+import { ResultSetHeader } from "mysql2";
 import  pool  from "../../../../../lib/db"; 
 import { NextResponse } from "next/server"; 
 
@@ -10,7 +11,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Description is required and must be a string." }, { status: 400 });
     }
 
-    const [result] = await pool.query(
+    const [result]: [ResultSetHeader, any] = await pool.query<ResultSetHeader>(
       "INSERT INTO complaints (description, status, created_at) VALUES (?, ?, ?)",
       [description, "Pending", new Date()]
     );

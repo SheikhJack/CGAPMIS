@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '../../../../../lib/db';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,10 +25,10 @@ export async function POST(req: NextRequest) {
     `;
     const values = [title, description, deadline, budget, criteria];
 
-    const [results] = await pool.query(query, values);
+    const [result]: [ResultSetHeader, any] = await pool.query<ResultSetHeader>(query, values);
 
     return NextResponse.json(
-      { message: 'Tender created successfully.', tenderId: results.insertId },
+      { message: 'Tender created successfully.', tenderId: result.insertId },
       { status: 201 }
     );
   } catch (error) {
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const query = 'SELECT * FROM create_tender';
-    const [results] = await pool.query(query);
+    const [results]: [RowDataPacket[], any] = await pool.query<RowDataPacket[]>(query);
 
     // Check if any tenders exist
     if (results.length === 0) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "../../../../../lib/db"; 
+import { RowDataPacket } from "mysql2";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
       remarks,
     } = tenderData;
 
-    const [existingEvaluations] = await pool.query(
+    const [existingEvaluations]: [RowDataPacket[], any] = await pool.query<RowDataPacket[]>(
       "SELECT id, evaluation_score FROM tender_evaluations WHERE tender_id = ?",
       [tender_id]
     );
