@@ -5,11 +5,11 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-interface ProjectFormProps {
-  onAddProject: (project: any) => void;
-}
+// interface ProjectFormProps {
+//   onAddProject: (project: any) => void;
+// }
 
-const ProjectForm: React.FC<ProjectFormProps> = ({ onAddProject }) => {
+const ProjectForm = () => {
   const [projectTitle, setProjectTitle] = useState('');
   const [department, setDepartment] = useState('');
   const [budget, setBudget] = useState('');
@@ -159,3 +159,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ onAddProject }) => {
 };
 
 export default ProjectForm;
+function onAddProject(result: any) {
+  throw new Error('Function not implemented.');
+}
+
