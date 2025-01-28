@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Children } from 'react';
 import { Metadata } from "next";
 import ECommerce from "@/components/Dashboard/E-commerce";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      <DefaultLayout children={undefined} >
+      <DefaultLayout >
         <ECommerce />
       </DefaultLayout>
     </>
