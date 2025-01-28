@@ -14,6 +14,7 @@
     "dotenv": "^16.4.7",
     "flatpickr": "^4.6.13",
     "formdata-node": "^6.0.3",
+    "jspdf": "^2.5.2",
     "jsvectormap": "^1.6.0",
     "mysql2": "^3.12.0",
     "next": "^14.2.4",

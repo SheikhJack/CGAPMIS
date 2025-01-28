@@ -173,7 +173,7 @@ const menuGroups = [
         route: "#",
         children: [
           { label: "Tender Evaluation Report", route: "/" },
-          { label: "Complaints Report", route: "/" },
+          { label: "Complaints Report", route: "/reports/complaints" },
           { label: "Board Evaluation Report", route: "/" },
           { label: "OutSourcing Project Report", route: "/" },
           { label: "Contract Management Report", route: "/" },
