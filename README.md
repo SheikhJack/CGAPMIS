@@ -47,12 +47,14 @@ npm or yarn: For managing dependencies
 Steps to Run the Application
 Clone the repository:
 
+
 bash
 Copy
 Edit
-git clone https://github.com/yourusername/CGAPMIS
+git clone https://github.com/SheikhJack/CGAPMIS
 cd your-repository
 Install dependencies:
+
 
 bash
 Copy
